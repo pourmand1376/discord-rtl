@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RTL Prefix</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Tahoma', sans-serif;
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: #fff;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 300px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #0070F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Tahoma', sans-serif;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .message {
+            margin-top: 10px;
+            padding: 10px;
+            text-align: center;
+            background-color: #4BB543;
+            color: white;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <textarea id="input-text" placeholder="متن خود را در اینجا قرار دهید..."></textarea>
+    <button onclick="copyWithRTL()">کپی متن راست به چپ!</button>
+    <div id="message" class="message">کپی شد!</div>
+
+    <script>
+        function copyWithRTL() {
+            const inputText = document.getElementById('input-text').value;
+            
+            if (!inputText) {
+                return;
+            }
+            
+            // Process the text - add RTL EMBEDDING (U+202B) to the beginning of each line
+            const lines = inputText.split('\n');
+            const processedLines = lines.map(line => '\u202B' + line);
+            const outputText = processedLines.join('\n');
+            
+            // Copy directly to clipboard without showing in UI
+            const tempTextarea = document.createElement('textarea');
+            tempTextarea.value = outputText;
+            document.body.appendChild(tempTextarea);
+            tempTextarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempTextarea);
+            
+            // Show copied message
+            const message = document.getElementById('message');
+            message.style.display = 'block';
+            setTimeout(() => {
+                message.style.display = 'none';
+            }, 2000);
+        }
+    </script>
+</body>
+</html> 
