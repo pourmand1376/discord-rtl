@@ -52,12 +52,37 @@
             border-radius: 5px;
             display: none;
         }
+        .description {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .description a {
+            color: #0070F3;
+            text-decoration: none;
+        }
+        
+        .description a:hover {
+            text-decoration: underline;
+        }
+        
     </style>
 </head>
 <body>
+    <div class="description">
+        این یک صفحه بسیار ساده است که 
+        <a href="https://unicode-explorer.com/c/202B" target="_blank">کاراکتر راست به چپ (U+202B)</a>
+         رو در ابتدای هر پاراگراف اضافه می‌کنه که مستقیم داخل دیسکورد کپی کنید و دیگه متن‌تون همه جا به خوبی نمایش داده بشه. به همین سادگی
+    </div>
     <textarea id="input-text" placeholder="متن خود را در اینجا قرار دهید..."></textarea>
     <button onclick="copyWithRTL()">کپی متن راست به چپ!</button>
     <div id="message" class="message">کپی شد!</div>
+    
+
 
     <script>
         function copyWithRTL() {
