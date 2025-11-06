@@ -76,7 +76,7 @@
     <div class="description">
         این یک صفحه بسیار ساده است که 
         <a href="https://unicode-explorer.com/c/202B" target="_blank">کاراکتر راست به چپ (U+202B)</a>
-         رو در ابتدای هر خط اضافه می‌کنه که مستقیم داخل دیسکورد کپی کنید و دیگه متن‌تون همه جا به خوبی نمایش داده بشه. به همین سادگی
+         رو به صورت هوشمند در ابتدای هر خط اضافه می‌کنه. از markdown پشتیبانی می‌کنه و سینتکس markdown رو خراب نمی‌کنه. مستقیم داخل دیسکورد کپی کنید و دیگه متن‌تون همه جا به خوبی نمایش داده بشه. به همین سادگی
     </div>
     <textarea id="input-text" placeholder="متن خود را در اینجا قرار دهید..."></textarea>
     <button onclick="copyWithRTL()">کپی متن راست به چپ!</button>
@@ -92,9 +92,46 @@
                 return;
             }
             
-            // Process the text - add RTL EMBEDDING (U+202B) to the beginning of each line
+            // Process the text - add RTL EMBEDDING (U+202B) intelligently to preserve markdown syntax
             const lines = inputText.split('\n');
-            const processedLines = lines.map(line => '\u202B' + line);
+            const processedLines = lines.map(line => {
+                // Skip empty lines
+                if (line.trim() === '') {
+                    return line;
+                }
+                
+                // Check for horizontal rules (they don't need RTL as they're just visual separators)
+                if (/^(\s*)([-*_]{3,})(\s*)$/.test(line)) {
+                    return line;
+                }
+                
+                // Check for code block delimiters (``` lines) - don't add RTL to opening/closing ```
+                if (/^(\s*)```/.test(line)) {
+                    return line;
+                }
+                
+                // Markdown patterns where RTL should come after the syntax
+                const markdownPatterns = [
+                    { regex: /^(\s*)(#{1,6}\s+)/, name: 'header' },           // Headers: # ## ###
+                    { regex: /^(\s*)(>\s+)/, name: 'blockquote' },            // Blockquote: >
+                    { regex: /^(\s*)([-*+]\s+)/, name: 'unordered-list' },    // Unordered list: - * +
+                    { regex: /^(\s*)(\d+\.\s+)/, name: 'ordered-list' },      // Ordered list: 1. 2. 3.
+                ];
+                
+                // Check if line starts with markdown syntax
+                for (const pattern of markdownPatterns) {
+                    const match = line.match(pattern.regex);
+                    if (match) {
+                        // Add RTL after markdown syntax
+                        const prefix = match[0];
+                        const rest = line.substring(prefix.length);
+                        return prefix + '\u202B' + rest;
+                    }
+                }
+                
+                // For lines without block-level markdown, add RTL at the beginning
+                return '\u202B' + line;
+            });
             const outputText = processedLines.join('\n');
             
             // Copy directly to clipboard without showing in UI
